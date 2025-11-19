@@ -1,51 +1,7 @@
-const express = require('express')
-const mongoose = require('mongoose')
+const app = require('./app')
+const { PORT } = require('./utils/config')
+const { info } = require('./utils/logger')
 
-const app = express()
-
-const blogSchema = mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-})
-
-const Blog = mongoose.model('Blog', blogSchema)
-
-if (process.argv.length < 3){
-  console.log('Give password as an argument')
-  process.exit(1)
-}
-
-const password = encodeURIComponent(process.argv[2])
-
-const mongoUrl = `mongodb+srv://rzrakib:${password}@cluster1.n9nf6.mongodb.net/blogList?appName=Cluster1`
-
-mongoose.connect(mongoUrl, { family: 4 })
-  .then(() => {
-    console.log('Mongodb connected')
-  })
-  .catch(error => {
-    console.error(error.message)
-  })
-
-app.use(express.json())
-
-app.get('/api/blogs', (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs)
-  })
-})
-
-app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body)
-
-  blog.save().then((result) => {
-    response.status(201).json(result)
-  })
-})
-
-const PORT = 3003
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  info(`Server running on port ${PORT}`)
 })

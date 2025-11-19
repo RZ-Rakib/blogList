@@ -1,0 +1,25 @@
+const express = require('express')
+const mongoose = require('mongoose')
+const { MONGODB_URI } = require('./utils/config')
+const { info, error } = require('./utils/logger')
+const middleware = require('./utils/middleware')
+const { blogRoute } = require('./controllers/blogs')
+const app = express()
+
+mongoose.connect(MONGODB_URI, { family: 4 })
+  .then(() => {
+    info('Mongodb connected')
+  })
+  .catch(err => {
+    error('Server is failedto connect mongodb', err.message)
+  })
+
+app.use(express.static('dist'))
+app.use(express.json())
+app.use(middleware.requestLogger)
+app.use('/api/blogs', blogRoute)
+
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
+
+module.exports = app
