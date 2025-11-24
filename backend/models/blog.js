@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const blogSchema = mongoose.Schema({
   title: {
     type: String,
-    minLength:3,
+    minLength:[3, 'minimum 3 charecters'],
     required: true,
     unique: true
   },

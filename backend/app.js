@@ -11,7 +11,7 @@ mongoose.connect(MONGODB_URI, { family: 4 })
     info('Mongodb connected')
   })
   .catch(err => {
-    error('Server is failedto connect mongodb', err.message)
+    error('Server is failed to connect mongodb', err.message)
   })
 
 app.use(express.static('dist'))
