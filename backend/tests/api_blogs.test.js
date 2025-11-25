@@ -27,7 +27,7 @@ describe('When there is initially some blogs saved', () => {
     assert.strictEqual(response.body.length, helper.initialBlogs.length)
   })
 
-  test.only('a specific blog from returned blogs', async () => {
+  test('a specific blog from returned blogs', async () => {
     const blogsAtStart = await helper.blogsInDb()
 
     const response = await api.get('/api/blogs')
@@ -35,6 +35,16 @@ describe('When there is initially some blogs saved', () => {
     const contents = response.body.map(blog => blog.title)
     assert(contents.includes(blogsAtStart[1].title))
   })
+
+  test('verified that the unique identifier property is named id', async () => {
+    const response = await api.get('/api/blogs')
+
+    response.body.map(blog => {
+      assert.ok(blog.id),
+      assert.strictEqual(blog._id, undefined)
+    })
+  })
+
 })
 
 after(async () => {
