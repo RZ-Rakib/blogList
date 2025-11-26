@@ -24,7 +24,6 @@ blogRoute.post('/', async (req, res, next) => {
     return res.status(201).json(result)
 
   } catch (error) {
-    console.log('error ==> ', error)
     next(error)
   }
 })

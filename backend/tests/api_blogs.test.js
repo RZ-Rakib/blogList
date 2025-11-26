@@ -45,45 +45,74 @@ describe('When there is initially some blogs saved', () => {
     })
   })
 
-  test('success with a valid data', async () => {
-    const newObject = {
-      title: 'fsgfdsgdg string reduction',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-      likes: 11,
-    }
+  describe('addtion of a new blog', () => {
+    test('success with a valid data', async () => {
+      const newObject = {
+        title: 'fsgfdsgdg string reduction',
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+        likes: 11,
+      }
 
-    const blogsAtStart = await helper.blogsInDb()
+      const blogsAtStart = await helper.blogsInDb()
 
-    await api
-      .post('/api/blogs')
-      .send(newObject)
-      .expect(201)
-      .expect('content-type', /application\/json/)
+      await api
+        .post('/api/blogs')
+        .send(newObject)
+        .expect(201)
+        .expect('content-type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
 
-    const titles = blogsAtEnd.map(blog => blog.title)
-    assert(titles.includes(newObject.title))
-  })
+      const titles = blogsAtEnd.map(blog => blog.title)
+      assert(titles.includes(newObject.title))
+    })
 
-  test.only('dafult value is 0 if likes property is missing', async () => {
-    const newObject = {
-      'title': 'hello blog',
-      'author': 'RZ Rakib',
-      'url': 'www.example.com'
-    }
+    test('dafult value is 0 if likes property is missing', async () => {
+      const newObject = {
+        'title': 'hello blog',
+        'author': 'RZ Rakib',
+        'url': 'www.example.com'
+      }
 
-    await api
-      .post('/api/blogs')
-      .send(newObject)
-      .expect(201)
-      .expect('content-type', /application\/json/)
+      await api
+        .post('/api/blogs')
+        .send(newObject)
+        .expect(201)
+        .expect('content-type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    const addedBlog = blogsAtEnd.find(blog => blog.title === newObject.title)
-    assert.strictEqual(addedBlog.likes, 0)
+      const blogsAtEnd = await helper.blogsInDb()
+      const addedBlog = blogsAtEnd.find(blog => blog.title === newObject.title)
+      assert.strictEqual(addedBlog.likes, 0)
+    })
+
+    test('fails with statuscode 400 if url is missing', async () => {
+      const newObject = {
+        'title': 'hello blog',
+        'author': 'RZ Rakib',
+        'likes': 3
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newObject)
+        .expect(400)
+    })
+
+    test('fails with statuscode 400 if title is missing', async () => {
+      const newObject = {
+        'author': 'RZ Rakib',
+        'url': 'www.example.com',
+        'likes': 3
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newObject)
+        .expect(400)
+    })
+
   })
 
 })
