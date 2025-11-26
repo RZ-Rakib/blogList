@@ -45,7 +45,7 @@ describe('When there is initially some blogs saved', () => {
     })
   })
 
-  test('a new blog is saved with success status-code', async () => {
+  test('success with a valid data', async () => {
     const newObject = {
       title: 'fsgfdsgdg string reduction',
       author: 'Edsger W. Dijkstra',
@@ -66,6 +66,24 @@ describe('When there is initially some blogs saved', () => {
 
     const titles = blogsAtEnd.map(blog => blog.title)
     assert(titles.includes(newObject.title))
+  })
+
+  test.only('dafult value is 0 if likes property is missing', async () => {
+    const newObject = {
+      'title': 'hello blog',
+      'author': 'RZ Rakib',
+      'url': 'www.example.com'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newObject)
+      .expect(201)
+      .expect('content-type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const addedBlog = blogsAtEnd.find(blog => blog.title === newObject.title)
+    assert.strictEqual(addedBlog.likes, 0)
   })
 
 })

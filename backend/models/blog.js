@@ -8,8 +8,14 @@ const blogSchema = mongoose.Schema({
     unique: [true, 'title must be unique']
   },
   author: String,
-  url: String,
-  likes: Number,
+  url: {
+    type: String,
+    required: [true, 'url required']
+  },
+  likes: {
+    type: Number,
+    default: 0
+  },
 })
 
 blogSchema.set('toJSON', {
