@@ -1,6 +1,9 @@
 ### get all blogs
 GET http://localhost:3003/api/blogs
 
+### delete a blog with id
+DELETE http://localhost:3003/api/blogs/69271cd1c48c0d175160d1d7
+
 ### post a new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json

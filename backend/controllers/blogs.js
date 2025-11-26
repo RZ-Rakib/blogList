@@ -2,7 +2,6 @@ const blogRoute = require('express').Router()
 const Blog = require('../models/blog')
 const logger = require('../utils/logger')
 
-
 blogRoute.get('/', async (req, res, next) => {
   try {
     const blogs = await Blog.find({})
@@ -23,6 +22,24 @@ blogRoute.post('/', async (req, res, next) => {
     logger.info('new blog added successfully')
     return res.status(201).json(result)
 
+  } catch (error) {
+    next(error)
+  }
+})
+
+blogRoute.delete('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id
+
+    const deletedBlog = await Blog.findByIdAndDelete(id)
+
+    if(!deletedBlog) {
+      logger.warn('no blog found')
+      return res.status(404).json({ message: 'no blog found' })
+    }
+
+    logger.info(`blog with id:${id} deleted`)
+    return res.status(204).json()
   } catch (error) {
     next(error)
   }

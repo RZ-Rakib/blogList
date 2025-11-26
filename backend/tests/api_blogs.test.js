@@ -112,7 +112,35 @@ describe('When there is initially some blogs saved', () => {
         .send(newObject)
         .expect(400)
     })
+  })
 
+  describe('deletion of blog', () => {
+    test('success with status code 204 if id is valid', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
+      await api
+        .delete(`/api/blogs/${blogsAtStart[blogsAtStart.length - 1].id}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+    })
+
+    test('fails with status code 400 if id invalid', async () => {
+      const invalidId = 'lksdjf54342525'
+
+      await api
+        .delete(`/api/blogs/${invalidId}`)
+        .expect(400)
+    })
+
+    test('fails with status code 404 if blog doesnot exists', async () => {
+      const nonExistingId = await helper.nonExistingId()
+
+      await api
+        .delete(`/api/blogs/${nonExistingId}`)
+        .expect(404)
+    })
   })
 
 })
