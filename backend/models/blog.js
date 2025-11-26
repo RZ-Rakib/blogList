@@ -4,8 +4,8 @@ const blogSchema = mongoose.Schema({
   title: {
     type: String,
     minLength:[3, 'minimum 3 charecters'],
-    required: true,
-    unique: true
+    required: [true, 'title required'],
+    unique: [true, 'title must be unique']
   },
   author: String,
   url: String,

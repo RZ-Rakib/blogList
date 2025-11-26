@@ -45,6 +45,29 @@ describe('When there is initially some blogs saved', () => {
     })
   })
 
+  test('a new blog is saved with success status-code', async () => {
+    const newObject = {
+      title: 'fsgfdsgdg string reduction',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      likes: 11,
+    }
+
+    const blogsAtStart = await helper.blogsInDb()
+
+    await api
+      .post('/api/blogs')
+      .send(newObject)
+      .expect(201)
+      .expect('content-type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
+
+    const titles = blogsAtEnd.map(blog => blog.title)
+    assert(titles.includes(newObject.title))
+  })
+
 })
 
 after(async () => {
