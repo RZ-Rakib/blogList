@@ -4,6 +4,15 @@ GET http://localhost:3003/api/blogs
 ### delete a blog with id
 DELETE http://localhost:3003/api/blogs/69271cd1c48c0d175160d1d7
 
+### update a blog with valid id
+PUT http://localhost:3003/api/blogs/692b5effe326933b3f290581
+Content-Type: application/json
+
+{
+  "title": "this is a updated blog",
+  "url": "www.hello.com"
+}
+
 ### post a new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json

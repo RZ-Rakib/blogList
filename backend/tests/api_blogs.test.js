@@ -143,6 +143,70 @@ describe('When there is initially some blogs saved', () => {
     })
   })
 
+  describe('Updation a blog', () => {
+    test('success with status code 200 if id is valid', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
+      const newObject = {
+        'title': 'this is a updated blog',
+        'url': 'www.hello.com'
+      }
+
+      await api
+        .put(`/api/blogs/${blogsAtStart[1].id}`)
+        .send(newObject)
+        .expect(200)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      const titles = blogsAtEnd.map(blog => blog.title)
+      const urls = blogsAtEnd.map(blog => blog.url)
+
+      assert(titles.includes(newObject.title))
+      assert(urls.includes(newObject.url))
+    })
+  })
+
+  test('fails with status code 400 if newObject doesnot contains title and url', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const newObject = {
+      'author': 'RZ Rakib',
+      'likes': 3
+    }
+
+    await api
+      .put(`/api/blogs/${blogsAtStart[1].id}`)
+      .send(newObject)
+      .expect(400)
+  })
+
+  test('fails with status code 404 if no blog found with id', async () => {
+    const nonExistingId = await helper.nonExistingId()
+
+    const newObject = {
+      'title': 'this is a updated blog',
+      'url': 'www.hello.com'
+    }
+
+    await api
+      .put(`/api/blogs/${nonExistingId}`)
+      .send(newObject)
+      .expect(404)
+  })
+
+  test('fails with status code 400 if id invalid', async () => {
+    const invalidId = 'dsfki345346436'
+
+    const newObject = {
+      'title': 'this is a updated blog',
+      'url': 'www.hello.com'
+    }
+
+    await api
+      .put(`/api/blogs/${invalidId}`)
+      .send(newObject)
+      .expect(400)
+  })
 })
 
 after(async () => {

@@ -45,4 +45,39 @@ blogRoute.delete('/:id', async (req, res, next) => {
   }
 })
 
+blogRoute.put('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const { title, author, url, likes } = req.body
+
+    if(!title || !url){
+      logger.warn('body needs required fields title and url')
+      return res.status(400).json({ message: 'body needs required fields title and url' })
+    }
+
+    const newObject = {
+      title,
+      author,
+      url,
+      likes
+    }
+
+    const updatedNote = await Blog.findByIdAndUpdate(
+      id,
+      newObject,
+      { new: true, runValidator: true }
+    )
+
+    if(!updatedNote){
+      logger.warn('No blog found with the id')
+      return res.status(404).json({ error: 'No blog found with the id' })
+    }
+
+    return res.status(200).json(updatedNote)
+
+  } catch (error) {
+    next(error)
+  }
+})
+
 module.exports = { blogRoute }
