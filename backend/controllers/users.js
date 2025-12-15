@@ -7,13 +7,23 @@ userRoute.post('/', async(request, response, next) => {
   try {
     const { username, name, password } = request.body
 
+    if(!password){
+      logger.warn('password required')
+      return response.status(400).json({ error: 'password required' })
+    }
+
+    if(password.length < 3) {
+      logger.warn('minimum length of password is three characters')
+      return response.status(400).json({ error:'minimum length of password is three characters' })
+    }
+
     const saltRound = 10
-    const hashedPassword = await bcrypt.hash(password, saltRound)
+    const passwordHash = await bcrypt.hash(password, saltRound)
 
     const user = new User({
       username,
       name,
-      hashedPassword
+      passwordHash
     })
 
     const savedUser = await user.save()
@@ -22,8 +32,10 @@ userRoute.post('/', async(request, response, next) => {
     return response.status(201).json(savedUser)
 
   } catch (error) {
+    console.log('FULL ERROR OBJECT:', error)
+    console.log('NAME:', error.name)
+    console.log('CODE:', error.code)
     next(error)
-    logger.error('Error found:', error.message)
   }
 })
 
@@ -39,4 +51,4 @@ userRoute.get('/', async (request, response, next) => {
 
 })
 
-module.exports = { userRoute }
+module.exports = userRoute
