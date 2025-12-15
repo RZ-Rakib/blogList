@@ -5,7 +5,7 @@ const blogSchema = mongoose.Schema({
     type: String,
     minLength:[3, 'minimum 3 charecters'],
     required: [true, 'title required'],
-    unique: [true, 'title must be unique']
+    unique: true
   },
   author: String,
   url: {
@@ -16,6 +16,10 @@ const blogSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 blogSchema.set('toJSON', {

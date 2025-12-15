@@ -1,10 +1,11 @@
 const blogRoute = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const logger = require('../utils/logger')
 
 blogRoute.get('/', async (req, res, next) => {
   try {
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
     logger.info('fetched all data')
     return res.status(200).json(blogs)
 
@@ -15,12 +16,28 @@ blogRoute.get('/', async (req, res, next) => {
 
 blogRoute.post('/', async (req, res, next) => {
   try {
-    const blog = new Blog(req.body)
+    const body = req.body
 
-    const result = await blog.save()
+    const user = await User.findById(body.userId)
+    if(!user){
+      return res.status(400).json({ error: 'userId missing or not valid' })
+    }
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
+
+    const savedBlog = await blog.save()
+
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
 
     logger.info('new blog added successfully')
-    return res.status(201).json(result)
+    return res.status(201).json(savedBlog)
 
   } catch (error) {
     next(error)
