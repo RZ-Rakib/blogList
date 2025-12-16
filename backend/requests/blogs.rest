@@ -16,11 +16,11 @@ Content-Type: application/json
 ### post a new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdvcmlsbGEiLCJpZCI6IjY5M2ZmY2Y3OGMyZDUyOWY1NzliYWQ3NCIsImlhdCI6MTc2NTg4ODM0M30.OhAPBWmx1jaElLkSkWSYbZLCFiUTGRpkCy9sxUlHoTI
 
 {
-  "title": "lets do ittttttttt",
+  "title": "Authorization: successful",
   "author": "RZ Rakib",
   "url": "www.example.com",
-  "likes": 5,
-  "userId": "693ffc4818d946153f0929df"
+  "likes": 5
 }
