@@ -4,14 +4,39 @@ const { describe, test, beforeEach, after } = require('node:test')
 const mongoose = require('mongoose')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 const helper = require('./api_helpers')
 
 const api = supertest(app)
 
 describe('When there is initially some blogs saved', () => {
+  let token
+
   beforeEach(async () => {
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('12345', 10)
+    const userObject = new User({
+      username: 'Godzilla',
+      name: 'Imazination',
+      passwordHash
+    })
+
+    const user = await userObject.save()
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({
+        username: 'Godzilla',
+        password: '12345'
+      })
+
+    token = loginResponse.body.token
+
+    const blogs = helper.initialBlogs.map(b => ({ ...b, user:user._id }) )
+    await Blog.insertMany(blogs)
   })
 
   test('all blogs returned as json', async () => {
@@ -47,6 +72,8 @@ describe('When there is initially some blogs saved', () => {
 
   describe('addtion of a new blog', () => {
     test('success with a valid data', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
       const newObject = {
         title: 'fsgfdsgdg string reduction',
         author: 'Edsger W. Dijkstra',
@@ -54,10 +81,9 @@ describe('When there is initially some blogs saved', () => {
         likes: 11,
       }
 
-      const blogsAtStart = await helper.blogsInDb()
-
       await api
         .post('/api/blogs')
+        .set('authorization', `Bearer ${token}`)
         .send(newObject)
         .expect(201)
         .expect('content-type', /application\/json/)
@@ -78,6 +104,7 @@ describe('When there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('authorization', `Bearer ${token}`)
         .send(newObject)
         .expect(201)
         .expect('content-type', /application\/json/)
@@ -87,17 +114,21 @@ describe('When there is initially some blogs saved', () => {
       assert.strictEqual(addedBlog.likes, 0)
     })
 
-    test('fails with statuscode 400 if url is missing', async () => {
+    test('fails with status-code 400, if title is not unique', async () => {
       const newObject = {
-        'title': 'hello blog',
-        'author': 'RZ Rakib',
-        'likes': 3
+        title: helper.initialBlogs[0].title,
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+        likes: 11,
       }
 
-      await api
+      const result = await api
         .post('/api/blogs')
+        .set('authorization', `Bearer ${token}`)
         .send(newObject)
         .expect(400)
+
+      assert(result.body.error.includes('username must be unique'))
     })
 
     test('fails with statuscode 400 if title is missing', async () => {
@@ -107,10 +138,45 @@ describe('When there is initially some blogs saved', () => {
         'likes': 3
       }
 
-      await api
+      const result = await api
         .post('/api/blogs')
+        .set('authorization', `Bearer ${token}`)
         .send(newObject)
         .expect(400)
+
+      assert(result.body.error.includes('title required'))
+    })
+
+    test('fails with statuscode 400 if url is missing', async () => {
+      const newObject = {
+        'title': 'hello blog',
+        'author': 'RZ Rakib',
+        'likes': 3
+      }
+
+      const result = await api
+        .post('/api/blogs')
+        .set('authorization', `Bearer ${token}`)
+        .send(newObject)
+        .expect(400)
+
+      assert(result.body.error.includes('url required'))
+    })
+
+    test('fails with status-code 401, if token is missing', async () => {
+      const newObject = {
+        title: 'fsgfdsgdg string reduction',
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+        likes: 11,
+      }
+
+      const result = await api
+        .post('/api/blogs')
+        .send(newObject)
+        .expect(401)
+
+      assert(result.body.error.includes('token missing'))
     })
   })
 
@@ -120,6 +186,7 @@ describe('When there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogsAtStart[blogsAtStart.length - 1].id}`)
+        .set('authorization', `Bearer ${token}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -131,6 +198,7 @@ describe('When there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${invalidId}`)
+        .set('authorization', `Bearer ${token}`)
         .expect(400)
     })
 
@@ -139,7 +207,18 @@ describe('When there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${nonExistingId}`)
+        .set('authorization', `Bearer ${token}`)
         .expect(404)
+    })
+
+    test('fails with status code 401 if token is missing', async () => {
+      const nonExistingId = await helper.nonExistingId()
+
+      const result = await api
+        .delete(`/api/blogs/${nonExistingId}`)
+        .expect(401)
+
+      assert(result.body.error.includes('token missing'))
     })
   })
 
