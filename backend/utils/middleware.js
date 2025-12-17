@@ -1,5 +1,6 @@
+const { SECRET } = require('./config')
 const logger = require('./logger')
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -39,9 +40,25 @@ const tokenExtractor = (request, response, next) => {
   next()
 }
 
+const userExtractor = (request, response, next) => {
+  if(!request.token) {
+    return response.status(401).json({ error: 'token missing' })
+  }
+
+  try {
+    const decodedToken = jwt.verify(request.token, SECRET)
+    request.user = decodedToken
+    next()
+  } catch {
+    return response.status(401).json({ error: 'invalid or expired token' })
+  }
+
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  userExtractor
 }
