@@ -2,7 +2,8 @@
 GET http://localhost:3003/api/blogs
 
 ### delete a blog with id
-DELETE http://localhost:3003/api/blogs/69271cd1c48c0d175160d1d7
+DELETE http://localhost:3003/api/blogs/6941b45ab1677fdad37f5ba8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdvcmlsbGEiLCJpZCI6IjY5M2ZmY2Y3OGMyZDUyOWY1NzliYWQ3NCIsImlhdCI6MTc2NTkxMzU4N30.si5ISY1BdbJkMvLih4ICiYuAG4qIomt7GaWMxB0SIKE
 
 ### update a blog with valid id
 PUT http://localhost:3003/api/blogs/692b5effe326933b3f290581
@@ -16,11 +17,11 @@ Content-Type: application/json
 ### post a new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdvcmlsbGEiLCJpZCI6IjY5M2ZmY2Y3OGMyZDUyOWY1NzliYWQ3NCIsImlhdCI6MTc2NTkxMzU4N30.si5ISY1BdbJkMvLih4ICiYuAG4qIomt7GaWMxB0SIKE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikh1bWFuIiwiaWQiOiI2OTQyNmE3YjNjYmZkNGQ1NDJlMmQwYjEiLCJpYXQiOjE3NjU5NjA2NTl9.AkED4waiXed9vqvzeUkQXdHLOUx2oG5lhY-mCj1lcJw
 
 {
-  "title": "Authorization successful with middleware",
-  "author": "RZ Rakib",
-  "url": "www.example.com",
-  "likes": 5
+  "title": "blog 5",
+  "author": "Human",
+  "url": "www.destroyer.com",
+  "likes": 6
 }

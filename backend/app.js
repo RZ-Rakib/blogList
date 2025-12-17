@@ -6,13 +6,15 @@ const middleware = require('./utils/middleware')
 const blogRoute = require('./controllers/blogs')
 const userRoute = require('./controllers/users')
 const loginRoute = require('./controllers/login')
-//const Blog = require('./models/blog')
+// const Blog = require('./models/blog')
+// const User = require('./models/user')
 const app = express()
 
 mongoose.connect(MONGODB_URI, { family: 4 })
   .then(async () => {
     info('Mongodb connected')
-    //Blog.deleteMany({})
+    // await Blog.deleteMany({})
+    // await User.deleteMany({})
   })
   .catch(err => {
     error('Server is failed to connect mongodb', err.message)

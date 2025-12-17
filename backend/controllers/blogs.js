@@ -5,11 +5,11 @@ const { SECRET } = require('../utils/config')
 const logger = require('../utils/logger')
 const jwt = require('jsonwebtoken')
 
-blogRoute.get('/', async (req, res, next) => {
+blogRoute.get('/', async (request, response, next) => {
   try {
     const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
     logger.info('fetched all data')
-    return res.status(200).json(blogs)
+    return response.status(200).json(blogs)
 
   } catch (error) {
     next(error)
@@ -19,8 +19,12 @@ blogRoute.get('/', async (req, res, next) => {
 blogRoute.post('/', async (request, response, next) => {
   try {
     const body = request.body
+    if(!request.token) {
+      return response.status(401).json({ error: 'token missing' })
+    }
 
     const decodedToken = jwt.verify(request.token, SECRET)
+
     if(!decodedToken.id){
       return response.status(401).json({ error: 'token invalid' })
     }
@@ -51,32 +55,51 @@ blogRoute.post('/', async (request, response, next) => {
   }
 })
 
-blogRoute.delete('/:id', async (req, res, next) => {
+blogRoute.delete('/:id', async (request, response, next) => {
   try {
-    const id = req.params.id
+    const id = request.params.id
 
-    const deletedBlog = await Blog.findByIdAndDelete(id)
+    const decodedToken = jwt.verify(request.token, SECRET)
 
-    if(!deletedBlog) {
-      logger.warn('no blog found')
-      return res.status(404).json({ message: 'no blog found' })
+    if(!decodedToken.id) {
+      logger.warn('token invalid')
+      return response.status(401).json({ error: 'token invalid' })
     }
 
+    const user = await User.findById(decodedToken.id)
+    if(!user) {
+      logger.warn('userId missing or not valid')
+      return response.status.json({ error: 'userId missing or not valid' })
+    }
+
+    const blog = await Blog.findById(id)
+
+    if(!blog) {
+      logger.warn('no blog found')
+      return response.status(404).json({ message: 'no blog found' })
+    }
+
+    if(user.id.toString() !== blog.user.toString()) {
+      logger.warn('user doesnot have permission to delete this blog')
+      return response.status(403).json({ error: 'user doesnot have permission to delete this blog' })
+    }
+
+    await Blog.findByIdAndDelete(id)
     logger.info(`blog with id:${id} deleted`)
-    return res.status(204).json()
+    return response.status(204).json()
   } catch (error) {
     next(error)
   }
 })
 
-blogRoute.put('/:id', async (req, res, next) => {
+blogRoute.put('/:id', async (request, response, next) => {
   try {
-    const id = req.params.id
-    const { title, author, url, likes } = req.body
+    const id = request.params.id
+    const { title, author, url, likes } = request.body
 
     if(!title || !url){
       logger.warn('body needs required fields title and url')
-      return res.status(400).json({ message: 'body needs required fields title and url' })
+      return response.status(400).json({ message: 'body needs required fields title and url' })
     }
 
     const newObject = {
@@ -94,10 +117,10 @@ blogRoute.put('/:id', async (req, res, next) => {
 
     if(!updatedNote){
       logger.warn('No blog found with the id')
-      return res.status(404).json({ error: 'No blog found with the id' })
+      return response.status(404).json({ error: 'No blog found with the id' })
     }
 
-    return res.status(200).json(updatedNote)
+    return response.status(200).json(updatedNote)
 
   } catch (error) {
     next(error)
