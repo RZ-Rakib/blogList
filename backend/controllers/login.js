@@ -30,7 +30,7 @@ loginRoute.post('/', async (request, response, next) => {
       .status(201)
       .json({
         token,
-        usernamme: user.username,
+        username: user.username,
         name: user.name
       })
   } catch (error) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +12,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState({ message: null, type: null })
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -40,8 +42,17 @@ const App = () => {
       setUser(loggedUser)
       setUsername('')
       setPassword('')
-    } catch {
-      console.log('Wrong credential')
+      setNotificationMessage({ message: `${loggedUser.name} logged in successfully`, type: 'success' })
+      setTimeout(() => {
+        setNotificationMessage({ message: null, type: null })
+      }, 3000);
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || 'something went wrong'
+      setNotificationMessage({ message: errorMessage, type: 'error' })
+      setTimeout(() => {
+        setNotificationMessage({ message: null, type: null })
+      }, 3000);
     }
   }
 
@@ -60,10 +71,17 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
-    } catch {
+      setNotificationMessage({ message: `${newSavedNote.title} created successfully`, type: 'success' })
       setTimeout(() => {
-        console.log('invalid credentials')
-      }, 2000);
+        setNotificationMessage({ message: null, type: null })
+      }, 3000);
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || 'something went wrong'
+      setNotificationMessage({ message: errorMessage, type: 'error' })
+      setTimeout(() => {
+        setNotificationMessage({ message: null, type: null })
+      }, 3000);
       setTitle('')
       setAuthor('')
       setUrl('')
@@ -75,6 +93,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={notificationMessage.message} type={notificationMessage.type} />
         <form onSubmit={handleLogin}>
           <div>
             <label>
@@ -105,6 +124,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
+      <Notification message={notificationMessage.message} type={notificationMessage.type} />
       <div>
         <a>{user.name} logged in</a>
         <button onClick={handleLogout}>logout</button>

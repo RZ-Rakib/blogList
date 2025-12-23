@@ -32,9 +32,9 @@ userRoute.post('/', async(request, response, next) => {
     return response.status(201).json(savedUser)
 
   } catch (error) {
-    console.log('FULL ERROR OBJECT:', error)
-    console.log('NAME:', error.name)
-    console.log('CODE:', error.code)
+    // console.log('FULL ERROR OBJECT:', error)
+    // console.log('NAME:', error.name)
+    // console.log('CODE:', error.code)
     next(error)
   }
 })
