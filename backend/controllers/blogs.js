@@ -28,7 +28,7 @@ blogRoute.post('/', middleware.userExtractor, async (request, response, next) =>
       title: body.title,
       author: body.author,
       url: body.url,
-      likes: body.likes,
+      $inc: { likes: body.likes },
       user: user._id
     })
 
@@ -52,7 +52,7 @@ blogRoute.delete('/:id', middleware.userExtractor, async (request, response, nex
     const user = await User.findById(request.user.id)
     if(!user) {
       logger.warn('userId missing or not valid')
-      return response.status.json({ error: 'userId missing or not valid' })
+      return response.status(404).json({ error: 'userId missing or not valid' })
     }
 
     const blog = await Blog.findById(id)
@@ -78,24 +78,20 @@ blogRoute.delete('/:id', middleware.userExtractor, async (request, response, nex
 blogRoute.put('/:id', async (request, response, next) => {
   try {
     const id = request.params.id
-    const { title, author, url, likes } = request.body
-
-    if(!title || !url){
-      logger.warn('body needs required fields title and url')
-      return response.status(400).json({ message: 'body needs required fields title and url' })
-    }
+    const body = request.body
 
     const newObject = {
-      title,
-      author,
-      url,
-      likes
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: body.user
     }
 
     const updatedNote = await Blog.findByIdAndUpdate(
       id,
       newObject,
-      { new: true, runValidator: true }
+      { new: true, runValidators: true }
     )
 
     if(!updatedNote){

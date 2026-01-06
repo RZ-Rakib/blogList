@@ -1,46 +1,46 @@
 import { useState } from "react"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, onLike }) => {
   const [visible, setVisible] = useState(false)
-
-  const showWhenVisible = { display: visible ? null : 'none' }
-  const hideWhenVisible = { display: visible ? 'none' : null }
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 3,
-    paddingBottom: 3,
+    paddingBottom: 2,
     marginBottom: 3,
     border: 'solid',
     borderWidth: 1
   }
 
   const handleVisible = () => {
-    setVisible(!visible)
+    setVisible(v => !v)
+  }
+
+  const handleLike = () => {
+    onLike(blog)
   }
 
   return (
     <div style={blogStyle}>
-
-      <div style={hideWhenVisible}>
-        {blog.title}<button onClick={handleVisible}>view</button>
+      <div >
+        {blog.title}
+        <button onClick={handleVisible}>
+          {visible ? 'hide' : 'show'}
+        </button>
       </div>
-      <div style={showWhenVisible}>
-        <div>
-          {blog.title}<button onClick={handleVisible}>hide</button>
-        </div>
+      {visible && (
         <div>
           <a href={blog.url} target="_blank" rel="noreferrer">
             {blog.url}
           </a>
           <div>
             likes:{blog.likes}
-            <button>like</button>
+            <button onClick={handleLike}>like</button>
             {''}
           </div>
           {blog.author}
         </div>
-      </div>
+      )}
     </div>
 
   )

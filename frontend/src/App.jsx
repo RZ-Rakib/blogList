@@ -81,6 +81,30 @@ const App = () => {
     }
   }
 
+  const handleLike = async (blog) => {
+    try {
+      const updatedObject = {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes + 1,
+        user: blog.user.id || blog.user._id || blog.user,
+      }
+
+      const updatedBlog = await blogService.update(blog.id, updatedObject)
+
+      setBlogs(prev => prev.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+
+    } catch (error) {
+      const errorMesssage = error.response?.data?.error || 'something went wrong'
+
+      setNotificationMessage({ message: errorMesssage, type: 'error' })
+      setTimeout(() => {
+        setNotificationMessage({ message: null, type: null })
+      }, 3000);
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -129,7 +153,7 @@ const App = () => {
 
       <br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onLike={handleLike} />
       )}
     </div>
   )

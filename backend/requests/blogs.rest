@@ -6,12 +6,11 @@ DELETE http://localhost:3003/api/blogs/6942878630f0458f12f279ff
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikh1bWFuIiwiaWQiOiI2OTQyNmE3YjNjYmZkNGQ1NDJlMmQwYjEiLCJpYXQiOjE3NjU5Njc3ODV9.BO22nCikHUUSoPLsZSJkF6l4gjU2SAj3_t9iSqj6bAY
 
 ### update a blog with valid id
-PUT http://localhost:3003/api/blogs/692b5effe326933b3f290581
+PUT http://localhost:3003/api/blogs/69429afadf9a5cf3f0ce8e4a
 Content-Type: application/json
 
 {
-  "title": "this is a updated blog",
-  "url": "www.hello.com"
+  "likes": "8",
 }
 
 ### post a new blog
