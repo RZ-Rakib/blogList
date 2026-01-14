@@ -1,7 +1,12 @@
 import { useState } from "react"
 
-const Blog = ({ blog, onLike }) => {
+const Blog = ({ blog, user, onLike, onDelete }) => {
   const [visible, setVisible] = useState(false)
+
+  const blogOwnerId = blog.user?.id
+  const loggedUserId = user?.id
+
+  const validOwnerToRemove = blogOwnerId && loggedUserId && blogOwnerId.toString() === loggedUserId.toString()
 
   const blogStyle = {
     paddingTop: 10,
@@ -9,6 +14,14 @@ const Blog = ({ blog, onLike }) => {
     paddingBottom: 2,
     marginBottom: 3,
     border: 'solid',
+    borderRadius: 4,
+    borderWidth: 1
+  }
+
+  const removeButton = {
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: 4,
     borderWidth: 1
   }
 
@@ -19,11 +32,14 @@ const Blog = ({ blog, onLike }) => {
   const handleLike = () => {
     onLike(blog)
   }
+  const handleDelete = () => {
+    onDelete(blog)
+  }
 
   return (
     <div style={blogStyle}>
       <div >
-        {blog.title}
+        {blog.title}{' '}
         <button onClick={handleVisible}>
           {visible ? 'hide' : 'show'}
         </button>
@@ -34,11 +50,16 @@ const Blog = ({ blog, onLike }) => {
             {blog.url}
           </a>
           <div>
-            likes:{blog.likes}
+            likes:{blog.likes} {''}
             <button onClick={handleLike}>like</button>
             {''}
           </div>
           {blog.author}
+          <div>
+            {validOwnerToRemove && (
+              <button style={removeButton} onClick={handleDelete}>remove</button>
+            )}
+          </div>
         </div>
       )}
     </div>

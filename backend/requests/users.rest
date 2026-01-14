@@ -2,17 +2,17 @@
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
-{
-  "username": "Human",
-  "name": "Destroyer",
-  "password": "12345"
-}
-
 # {
-#   "username": "Penguin",
-#   "name": "Ocean blue",
-#   "password": "12345"
+#   "username": "Human",
+#   "name": "Destroyer",
+#   "password": "r12345"
 # }
+
+{
+  "username": "Penguin",
+  "name": "Ocean blue",
+  "password": "r12345"
+}
 
 
 # {

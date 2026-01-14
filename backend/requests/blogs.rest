@@ -2,7 +2,7 @@
 GET http://localhost:3003/api/blogs
 
 ### delete a blog with id
-DELETE http://localhost:3003/api/blogs/6942878630f0458f12f279ff
+DELETE http://localhost:3003/api/blogs/6967625f00069a9ce39fefd5
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikh1bWFuIiwiaWQiOiI2OTQyNmE3YjNjYmZkNGQ1NDJlMmQwYjEiLCJpYXQiOjE3NjU5Njc3ODV9.BO22nCikHUUSoPLsZSJkF6l4gjU2SAj3_t9iSqj6bAY
 
 ### update a blog with valid id

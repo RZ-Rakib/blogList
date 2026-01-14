@@ -5,12 +5,12 @@ const Notification = ({ message, type }) => {
 
   const baseStyle = {
     width: '400px',
-    frontsize: '16px',
+    fontsize: '16px',
     padding: '12px 16px',
     borderRadius: '6px',
     fontFamily: 'Arial, sans-serif',
     marginBottom: '12px',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 1)'
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
   }
 
   const types = {
