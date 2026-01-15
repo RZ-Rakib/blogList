@@ -1,6 +1,6 @@
-import { useState, useImperativeHandle } from "react"
-import LoginForm from "./LoginForm"
-import SignupForm from "./SignupFrom"
+import { useState, useImperativeHandle } from 'react'
+import LoginForm from './LoginForm'
+import SignupForm from './SignupFrom'
 
 const Auth = ({ handleLogin, handleSignup, ref }) => {
   const [display, setDisplay] = useState(true)

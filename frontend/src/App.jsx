@@ -52,14 +52,14 @@ const App = () => {
       setNotificationMessage({ message: `${loggedUser.name} logged in successfully`, type: 'success' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
 
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'something went wrong'
       setNotificationMessage({ message: errorMessage, type: 'error' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -70,7 +70,7 @@ const App = () => {
       setNotificationMessage({ message: `${newUser.name} created sucessfully!`, type: 'success' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
 
       authRef.current.handleAuthToggle()
 
@@ -79,7 +79,7 @@ const App = () => {
       setNotificationMessage({ message: errorMessage, type: 'error' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -104,14 +104,14 @@ const App = () => {
       setNotificationMessage({ message: `${newSavedNote.title} created successfully`, type: 'success' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
 
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'something went wrong'
       setNotificationMessage({ message: errorMessage, type: 'error' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -135,7 +135,7 @@ const App = () => {
       setNotificationMessage({ message: errorMesssage, type: 'error' })
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -154,7 +154,7 @@ const App = () => {
 
       setTimeout(() => {
         setNotificationMessage({ message: null, type: null })
-      }, 3000);
+      }, 3000)
     }
   }
 
