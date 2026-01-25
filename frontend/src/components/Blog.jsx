@@ -37,15 +37,17 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} >
       <div >
         {blog.title}{' '}
         <button onClick={handleVisible}>
           {visible ? 'hide' : 'show'}
         </button>
+        <br />
+        {blog.author}
       </div>
       {visible && (
-        <div>
+        <div className='additonal-info'>
           <a href={blog.url} target="_blank" rel="noreferrer">
             {blog.url}
           </a>
@@ -54,7 +56,6 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
             <button onClick={handleLike}>like</button>
             {''}
           </div>
-          {blog.author}
           <div>
             {validOwnerToRemove && (
               <button style={removeButton} onClick={handleDelete}>remove</button>
