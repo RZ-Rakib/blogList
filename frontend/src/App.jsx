@@ -5,7 +5,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import signupService from './services/signup'
 import Notification from './components/Notification'
-import NewBlogFrom from './components/NewBlogFrom'
+import NewBlogFrom from './components/NewBlogForm'
 import Toggleable from './components/Toggleable'
 import Auth from './components/Auth'
 
@@ -88,7 +88,7 @@ const App = () => {
     setUser(null)
   }
 
-  const handleNewBlog = async (title, author, url) => {
+  const handleNewBlog = async ({ title, author, url }) => {
 
     try {
       const newSavedNote = await blogService.create({ title, author, url })
