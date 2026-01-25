@@ -47,7 +47,7 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
         {blog.author}
       </div>
       {visible && (
-        <div className='additonal-info'>
+        <div >
           <a href={blog.url} target="_blank" rel="noreferrer">
             {blog.url}
           </a>

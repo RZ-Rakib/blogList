@@ -39,4 +39,17 @@ describe('<Blog />', () => {
     expect(url).not.toBeInTheDocument()
     expect(likes).not.toBeInTheDocument()
   })
+
+  test('url & likes shows by pressing show button', async () => {
+    const user = userEvent.setup()
+
+    const showButton = screen.getByRole('button', { name: 'show' })
+    await user.click(showButton)
+
+    const url = screen.getByRole('link', { name: /www.testing.com/i })
+    const likes = screen.getByText(/likes:/i)
+
+    expect(url).toBeDefined()
+    expect(likes).toBeDefined()
+  })
 })
