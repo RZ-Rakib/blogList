@@ -52,4 +52,18 @@ describe('<Blog />', () => {
     expect(url).toBeDefined()
     expect(likes).toBeDefined()
   })
+
+  test('ensures all clicks on like button are calculated', async () => {
+    const user = userEvent.setup()
+    const showButton = screen.getByRole('button', { name: /show/i })
+
+    await user.click(showButton)
+
+    const likeButton = screen.getByRole('button', { name: /like/i })
+
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(mockLike.mock.calls).toHaveLength(2)
+  })
 })
