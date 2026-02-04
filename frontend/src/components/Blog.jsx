@@ -38,7 +38,7 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
 
   return (
     <div style={blogStyle} >
-      <div >
+      <div className='blogSummary'>
         {blog.title}{' '}
         <button onClick={handleVisible}>
           {visible ? 'hide' : 'show'}

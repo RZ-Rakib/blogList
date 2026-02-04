@@ -14,7 +14,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState({ message: null, type: null })
-
+  //useRef
   const authRef = useRef(null)
 
   useEffect(() => {
@@ -23,17 +23,21 @@ const App = () => {
     )
   }, [])
 
+  console.log('before:', blogs)
+
+
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('LoggedBlogappUser')
 
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+      const loggedUser = JSON.parse(loggedUserJSON)
 
-      const decodedToken = jwtDecode(user.token)
-      const userWithDecodedToken = { ...user, id: decodedToken.id }
+      const decodedToken = jwtDecode(loggedUser.token)
+      const userWithDecodedToken = { ...loggedUser, id: decodedToken.id }
       setUser(userWithDecodedToken)
 
-      blogService.setToken(user.token)
+      blogService.setToken(loggedUser.token)
     }
   }, [])
 
@@ -42,12 +46,12 @@ const App = () => {
       const loggedUser = await loginService.login({ username, password })
 
       const decodedToken = jwtDecode(loggedUser.token)
-      const userWithDecodedToken = { ...loggedUser, id: decodedToken.id }
+      const userWithDecodedTokenID = { ...loggedUser, id: decodedToken.id }
 
-      window.localStorage.setItem('LoggedBlogappUser', JSON.stringify(userWithDecodedToken))
+      window.localStorage.setItem('LoggedBlogappUser', JSON.stringify(userWithDecodedTokenID))
 
       blogService.setToken(loggedUser.token)
-      setUser(userWithDecodedToken)
+      setUser(userWithDecodedTokenID)
 
       setNotificationMessage({ message: `${loggedUser.name} logged in successfully`, type: 'success' })
       setTimeout(() => {
@@ -89,10 +93,8 @@ const App = () => {
   }
 
   const handleNewBlog = async ({ title, author, url }) => {
-
     try {
       const newSavedNote = await blogService.create({ title, author, url })
-
 
       const normalized = {
         ...newSavedNote,
@@ -117,17 +119,13 @@ const App = () => {
 
   const handleLike = async (blog) => {
     try {
-      const updatedObject = {
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        likes: blog.likes + 1,
-        user: blog.user.id
-      }
+      const updatedBlog = await blogService.likeIncrement(blog.id)
+      console.log('updated Blog', updatedBlog);
 
-      const updatedBlog = await blogService.update(blog.id, updatedObject)
 
-      setBlogs(prev => prev.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+      setBlogs(prev => prev.map(b => (b.id === blog.id ? updatedBlog : b)))
+      console.log('after updated blogs', blogs);
+
 
     } catch (error) {
       const errorMesssage = error.response?.data?.error || 'something went wrong'

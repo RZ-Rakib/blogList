@@ -25,18 +25,24 @@ const Auth = ({ handleLogin, handleSignup, ref }) => {
   return (
     <div>
       {display && (
-        <div style={authStyle}>
+        <div
+          style={authStyle}
+          className='loginForm'
+        >
           <LoginForm onLogin={handleLogin} />
           <br />
           <br />
           <div>
-            <a >Don't have any account?'</a>
+            <a >Don't have any account?</a>
             <button onClick={handleAuthToggle}>Signup</button>
           </div>
         </div>
       )}
       {!display && (
-        <div style={authStyle}>
+        <div
+          style={authStyle}
+          className='signupForm'
+        >
           <SignupForm onSignup={handleSignup} />
           <br />
           <br />
