@@ -9,16 +9,17 @@ const loginRoute = require('./controllers/login')
 // const Blog = require('./models/blog')
 // const User = require('./models/user')
 const app = express()
-
-mongoose.connect(MONGODB_URI, { family: 4 })
-  .then(async () => {
+const mongoConnection = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, { family: 4 })
     info('Mongodb connected')
-    // await Blog.deleteMany({})
-    // await User.deleteMany({})
-  })
-  .catch(err => {
-    error('Server is failed to connect mongodb', err.message)
-  })
+  } catch (err) {
+    error('server is failed to connect', err)
+    process.exit(1)
+  }
+}
+mongoConnection()
+
 
 app.use(express.static('dist'))
 app.use(express.json())
@@ -27,6 +28,11 @@ app.use(middleware.tokenExtractor)
 app.use('/api/blogs', blogRoute)
 app.use('/api/users', userRoute)
 app.use('/api/login', loginRoute)
+
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

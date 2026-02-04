@@ -7,10 +7,11 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development node --watch index.js",
-    "start": "NODE_ENV=production node index.js",
-    "test": "NODE_ENV=test node --test --test-concurrency=1",
-    "lint": "eslint ."
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
+    "lint": "eslint .",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@stylistic/eslint-plugin": "^5.6.0",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "supertest": "^7.1.4",

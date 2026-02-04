@@ -75,41 +75,19 @@ blogRoute.delete('/:id', middleware.userExtractor, async (request, response, nex
   }
 })
 
-blogRoute.put('/:id',middleware.userExtractor, async (request, response, next) => {
+blogRoute.put('/:id/likes', async (request, response, next) => {
   try {
     const id = request.params.id
-    const body = request.body
-
-    const user = await User.findById(request.user.id)
-    if(!user) {
-      logger.warn('userId missing or not valid')
-      return response.status(404).json({ error: 'userId missing or not valid' })
-    }
-
-    const blog = await Blog.findById(id).select('user')
-
-    if(!blog) {
-      logger.warn('no blog found')
-      return response.status(404).json({ message: 'no blog found' })
-    }
-
-    if(user.id.toString() !== blog.user.toString()) {
-      logger.warn('user doesnot have permission to update this blog')
-      return response.status(403).json({ error: 'user doesnot have permission to update this blog' })
-    }
-
-    const newObject = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes
-    }
 
     const updatedNote = await Blog.findByIdAndUpdate(
       id,
-      newObject,
+      { $inc: { likes: 1 } },
       { new: true, runValidators: true }
-    )
+    ).populate('user',{ username: 1, name: 1 })
+
+    if(!updatedNote){
+      return response.status(404).json({ error: 'no blog found' })
+    }
 
     return response.json(updatedNote)
 
