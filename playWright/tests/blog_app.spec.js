@@ -11,6 +11,13 @@ describe('Blog app', () => {
         password: 'rz12345'
       }
     })
+    await request.post('/api/users', {
+      data: {
+        username: 'Godzilla',
+        name: 'zaman',
+        password: 'rz12345'
+      }
+    })
   })
 
   test('Login form is shown', async({ page }) => {
@@ -21,7 +28,7 @@ describe('Blog app', () => {
     await expect(loginForm).toHaveText(/Don't have any account\?/i)
   })
 
-  describe('When login', () => {
+  describe('Login', () => {
     test('success with correct credentials', async ({ page }) => {
       const usernameInput = page.getByRole('textbox', { name: /username/i })
       const passwordInput = page.getByRole('textbox', { name: /password/i })
@@ -43,52 +50,83 @@ describe('Blog app', () => {
 
       await expect(page.getByText(/invalid username or password/i)).toBeVisible()
     })
+    describe('when logged in', () => {
+      test('a new blog can be created', async ( { page } ) => {
+        const usernameInput = page.getByRole('textbox', { name: /username/i })
+        const passwordInput = page.getByRole('textbox', { name: /password/i })
 
-    test('a new blog can be created', async ( { page } ) => {
-      const usernameInput = page.getByRole('textbox', { name: /username/i })
-      const passwordInput = page.getByRole('textbox', { name: /password/i })
+        await usernameInput.fill('Gorilla')
+        await passwordInput.fill('rz12345')
+        await page.getByRole('button', { name: /Login/i }).click()
 
-      await usernameInput.fill('Gorilla')
-      await passwordInput.fill('rz12345')
-      await page.getByRole('button', { name: /Login/i }).click()
+        await page.getByRole('button', { name: /Create new blog/i }).click()
 
-      await page.getByRole('button', { name: /Create new blog/i }).click()
+        await page.getByLabel('title').fill('Testing with playwright')
+        await page.getByLabel('author').fill('Rakib Zaman')
+        await page.getByLabel('url').fill('www.testing.com')
+        await page.getByRole('button', { name: /create/i }).click()
 
-      await page.getByLabel('title').fill('Testing with playwright')
-      await page.getByLabel('author').fill('Rakib Zaman')
-      await page.getByLabel('url').fill('www.testing.com')
-      await page.getByRole('button', { name: /create/i }).click()
+        await expect(page.locator('.blogSummary').getByText(/Testing with playwright/i)).toBeVisible()
+        await expect(page.locator('.blogSummary').getByText(/Rakib Zaman/i)).toBeVisible()
+      })
 
-      await expect(page.locator('.blogSummary').getByText(/Testing with playwright/i)).toBeVisible()
-      await expect(page.locator('.blogSummary').getByText(/Rakib Zaman/i)).toBeVisible()
-    })
+      test('a blog can be like', async ({ page }) => {
+        const usernameInput = page.getByRole('textbox', { name: /username/i })
+        const passwordInput = page.getByRole('textbox', { name: /password/i })
 
-    test('a blog can be like', async ({ page }) => {
-      const usernameInput = page.getByRole('textbox', { name: /username/i })
-      const passwordInput = page.getByRole('textbox', { name: /password/i })
+        await usernameInput.fill('Gorilla')
+        await passwordInput.fill('rz12345')
+        await page.getByRole('button', { name: /Login/i }).click()
 
-      await usernameInput.fill('Gorilla')
-      await passwordInput.fill('rz12345')
-      await page.getByRole('button', { name: /Login/i }).click()
+        await page.getByRole('button', { name: /Create new blog/i }).click()
 
-      await page.getByRole('button', { name: /Create new blog/i }).click()
+        await page.getByLabel('title').fill('Testing with playwright')
+        await page.getByLabel('author').fill('Rakib Zaman')
+        await page.getByLabel('url').fill('www.testing.com')
+        await page.getByRole('button', { name: /create/i }).click()
 
-      await page.getByLabel('title').fill('Testing with playwright')
-      await page.getByLabel('author').fill('Rakib Zaman')
-      await page.getByLabel('url').fill('www.testing.com')
-      await page.getByRole('button', { name: /create/i }).click()
+        const blogLocator = page.locator('.blogSummary').filter({ hasText: /Testing with playwright/i })
+        await expect(blogLocator).toBeVisible()
 
-      const blogLocator = page.locator('.blogSummary').filter({ hasText: /Testing with playwright/i })
-      await expect(blogLocator).toBeVisible()
+        await blogLocator.getByRole('button', { name: /show/i }).click()
 
-      await blogLocator.getByRole('button', { name: /show/i }).click()
+        const likeButton = blogLocator.getByRole('button', { name: /like/i })
+        await likeButton.click()
+        await likeButton.click()
 
-      const likeButton = blogLocator.getByRole('button', { name: /like/i })
-      await likeButton.click()
-      await likeButton.click()
+        await expect(blogLocator.locator('span', { hasText: 'likes:' })).toHaveText('likes:2')
+      })
 
-      await expect(blogLocator.locator('span', { hasText: 'likes:' })).toHaveText('likes:2')
+      test('only owner can delete own blogs', async ({ page }) => {
+        const usernameInput = page.getByRole('textbox', { name: /username/i })
+        const passwordInput = page.getByRole('textbox', { name: /password/i })
 
+        //first user
+        await usernameInput.fill('Gorilla')
+        await passwordInput.fill('rz12345')
+        await page.getByRole('button', { name: /Login/i }).click()
+
+        await page.getByRole('button', { name: /Create new blog/i }).click()
+
+        await page.getByLabel('title').fill('second note')
+        await page.getByLabel('author').fill('Rakib Zaman')
+        await page.getByLabel('url').fill('www.testing.com')
+        await page.getByRole('button', { name: /create/i }).click()
+
+        const blogLocator = page.locator('.blogSummary').filter({ hasText: 'second note' })
+        await expect(blogLocator).toBeVisible()
+
+        await page.getByRole('button', { name: /logout/i }).click()
+
+        //second user
+        await usernameInput.fill('Godzilla')
+        await passwordInput.fill('rz12345')
+        await page.getByRole('button', { name: /Login/i }).click()
+
+        await expect(blogLocator).toBeVisible()
+        await blogLocator.getByRole('button', { name: 'show' }).click()
+        await expect(blogLocator.getByRole('button', { name: 'remove' })).toHaveCount(0)
+      })
     })
   })
 })
