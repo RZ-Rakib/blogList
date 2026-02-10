@@ -97,7 +97,33 @@ describe('Blog app', () => {
         await expect(blogLocator.locator('span', { hasText: 'likes:' })).toHaveText('likes:2')
       })
 
-      test('only owner can delete own blogs', async ({ page }) => {
+      test('onwer can remove their blog', async ({ page }) => {
+        const usernameInput = page.getByRole('textbox', { name: /username/i })
+        const passwordInput = page.getByRole('textbox', { name: /password/i })
+        await usernameInput.fill('Gorilla')
+        await passwordInput.fill('rz12345')
+        await page.getByRole('button', { name: /Login/i }).click()
+
+        await page.getByRole('button', { name: /Create new blog/i }).click()
+        await page.getByLabel('title').fill('second note')
+        await page.getByLabel('author').fill('Rakib Zaman')
+        await page.getByLabel('url').fill('www.testing.com')
+        await page.getByRole('button', { name: /create/i }).click()
+
+        const blogLocator = page.locator('.blogSummary').filter({ hasText: 'second note' })
+        await expect(blogLocator).toBeVisible()
+
+        await blogLocator.getByRole('button', { name: 'show' }).click()
+
+        page.once('dialog', async (dialog) => {
+          await dialog.accept()
+        })
+        const removeButton = blogLocator.getByRole('button', { name: 'remove' })
+        await removeButton.click()
+        await expect(blogLocator).toHaveCount(0)
+      })
+
+      test('only owner sees the remove button', async ({ page }) => {
         const usernameInput = page.getByRole('textbox', { name: /username/i })
         const passwordInput = page.getByRole('textbox', { name: /password/i })
 
